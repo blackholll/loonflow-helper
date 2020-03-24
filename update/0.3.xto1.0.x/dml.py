@@ -84,12 +84,12 @@ for i in range(total_time):
     insert_relation_sql = ';'.join(insert_relation_sql_list)
     update_relation_sql = ';'.join(update_relation_sql_list)
     update_ticket_sql = ';'.join(update_ticket_sql_list)
-    print(insert_relation_sql)
-    print(update_relation_sql)
-    print(update_ticket_sql)
-    # cursor.execute(insert_relation_sql)
-    # cursor.execute(update_relation_sql)
-    # cursor.execute(update_ticket_sql)
+    # print(insert_relation_sql)
+    # print(update_relation_sql)
+    # print(update_ticket_sql)
+    cursor.execute(insert_relation_sql)
+    cursor.execute(update_relation_sql)
+    cursor.execute(update_ticket_sql)
 
 db.close()
 
