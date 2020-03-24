@@ -61,27 +61,35 @@ for i in range(total_time):
         # ticket record中attr_state_id变更， 需要查询flow_log以及当前state_id来做处理 草稿中0 进行中1 被拒绝2  被撤回3 已完成4
         # 0.3版本不支持保存到初始状态，所以不会有草稿中， 如果最后一次操作是拒绝类型的，那么attr_state_id为被拒绝， 如果最后一次操作非拒绝，且状态非结束状态，那么attr_state_id为进行中，
         # 如果当前状态为已经结束，那么attr_state_id为已完成
+        print(ticket_id)
         last_transition_query_sql = "select transition_type_id from workflow_transition where id =(select transition_id from ticket_ticketflowlog where id =(select max(id) from ticket_ticketflowlog where ticket_id={}))".format(ticket_id)
         cursor.execute(last_transition_query_sql)
-        last_transition_type_id = cursor.fetchone()[0]
-        if last_transition_type_id == 2:  # 被拒绝
-            attr_state_id = 2  # 工单的进行状态为:被退回
-        else:
-            ticket_state_query_sql = "select type_id from workflow_state where id={}".format(state_id)
-            cursor.execute(ticket_state_query_sql)
-            ticket_state_type_id = cursor.fetchone()[0]
-            if ticket_state_type_id == 0:  # 非结束状态
-                attr_state_id = 1  # 工单的进行状态为:进行中
+        last_transition_result = cursor.fetchone()
+        if last_transition_result:
+            last_transition_type_id = last_transition_result[0]
+            if last_transition_type_id == 2:  # 被拒绝
+                attr_state_id = 2  # 工单的进行状态为:被退回
             else:
-                attr_state_id = 4  # 工单的进行状态为已完成
-        update_ticket_sql_list.append("update ticket_ticketrecord set attr_state_id={} where id={}".format(attr_state_id, ticket_id))
+                ticket_state_query_sql = "select type_id from workflow_state where id={}".format(state_id)
+                cursor.execute(ticket_state_query_sql)
+                ticket_state_type_id = cursor.fetchone()[0]
+                if ticket_state_type_id == 0:  # 非结束状态
+                    attr_state_id = 1  # 工单的进行状态为:进行中
+                else:
+                    attr_state_id = 4  # 工单的进行状态为已完成
+        else:
+            attr_state_id = 1
+        update_ticket_sql_list.append("update ticket_ticketrecord set act_state_id={} where id={}".format(attr_state_id, ticket_id))
 
     insert_relation_sql = ';'.join(insert_relation_sql_list)
     update_relation_sql = ';'.join(update_relation_sql_list)
     update_ticket_sql = ';'.join(update_ticket_sql_list)
-    cursor.execute(insert_relation_sql)
-    cursor.execute(update_relation_sql)
-    cursor.execute(update_ticket_sql)
+    print(insert_relation_sql)
+    print(update_relation_sql)
+    print(update_ticket_sql)
+    # cursor.execute(insert_relation_sql)
+    # cursor.execute(update_relation_sql)
+    # cursor.execute(update_ticket_sql)
 
 db.close()
 

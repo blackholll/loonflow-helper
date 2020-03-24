@@ -1,17 +1,20 @@
 -- LoonUser 新增字段is_workflow_admin
-alter table account_loonuser add is_workflow_admin TINYINT(1) UNSIGNED NOT NULL default 0 comment '工作流管理员'
+alter table account_loonuser add is_workflow_admin TINYINT(1) UNSIGNED NOT NULL default 0 comment '工作流管理员';
 
 -- CustomNotice 字段修改， 去掉script，title_template， content_template  新增hook_url， hook_token 执行sql:
 alter table workflow_customnotice add hook_url varchar(100) not null default '' comment 'hook_url';
 alter table workflow_customnotice add hook_token varchar(100) not null default '' comment 'hook_token';
+alter table workflow_customnotice drop column title_template;
+alter table workflow_customnotice drop column content_template;
 alter table workflow_customnotice drop column script;
-alter table workflow_customnotice drop column hook_token;
+
+
 
 -- Workflow表新增 title_template， content_template
 alter table workflow_workflow add title_template varchar(100) not null default '' comment '标题模板';
 alter table workflow_workflow add content_template varchar(1000) not null default '' comment '内容模板';
 
---新增WorkflowAdmin表，用于保存工作流管理员
+-- 新增WorkflowAdmin表，用于保存工作流管理员
 CREATE TABLE `workflow_workflowadmin` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `creator` varchar(50) NOT NULL,
@@ -27,10 +30,11 @@ CREATE TABLE `workflow_workflowadmin` (
 -- 删除workflow表中的flowchart字段
 alter table workflow_workflow drop column flowchart;
 
---state表中删除sub_workflow_id字段
+-- state表中删除sub_workflow_id字段
 alter table workflow_state drop column sub_workflow_id;
+alter table workflow_state add column enable_retreat TINYINT(1) UNSIGNED NOT NULL default 0 comment '允许撤回';
 
---工单基础表中 删除is_end、 is_rejected字段
+-- 工单基础表中 删除is_end、 is_rejected字段
 alter table ticket_ticketrecord drop column is_end;
 alter table ticket_ticketrecord drop column is_rejected;
 
