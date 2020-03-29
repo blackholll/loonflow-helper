@@ -30,7 +30,7 @@ else:
 for i in range(total_time):
     limit_start = i
     limit_end = i + COUNT_PER_TIME
-    raw_sql0 = "select id, relation,participant_type_id, participant, gmt_created, state_id from ticket_ticketrecord " \
+    raw_sql0 = "select id, relation,participant_type_id, participant, gmt_created, state_id, creator from ticket_ticketrecord " \
                "limit {},{}".format(limit_start, limit_end)
     cursor.execute(raw_sql0)
     result = cursor.fetchall()
@@ -39,8 +39,10 @@ for i in range(total_time):
     insert_relation_sql_list = []
     update_relation_sql_list = []
     update_ticket_sql_list = []
+    update_ticket_worked_sql_list = []
+
     for result0 in result:
-        ticket_id, relation, participant_type_id, participant, gmt_created, state_id = result0
+        ticket_id, relation, participant_type_id, participant, gmt_created, state_id, creator = result0
         if relation:
             for relation0 in relation.split(','):
                 insert_relation_sql_list.append(
@@ -57,6 +59,13 @@ for i in range(total_time):
                     update_relation_sql_list.append(
                         "update ticket_ticketuser set in_process=1 where ticket_id={} and username='{}' and "
                         "is_deleted=0".format(ticket_id, participant0))
+        worked_sql = "select participant from ticket_ticketflowlog where ticket_id={} and transition_id!=0".format(ticket_id)
+        cursor.execute(worked_sql)
+        worked_sql_result = cursor.fetchall()
+        for worked_sql_result0 in worked_sql_result:
+            if worked_sql_result0[0] != creator:
+                # 排除工单创建人
+                update_ticket_worked_sql_list.append("update ticket_ticketuser set worked=1 where ticket_id={} and username='{}'".format(ticket_id,worked_sql_result0[0]))
 
         # ticket record中attr_state_id变更， 需要查询flow_log以及当前state_id来做处理 草稿中0 进行中1 被拒绝2  被撤回3 已完成4
         # 0.3版本不支持保存到初始状态，所以不会有草稿中， 如果最后一次操作是拒绝类型的，那么attr_state_id为被拒绝， 如果最后一次操作非拒绝，且状态非结束状态，那么attr_state_id为进行中，
@@ -84,12 +93,15 @@ for i in range(total_time):
     insert_relation_sql = ';'.join(insert_relation_sql_list)
     update_relation_sql = ';'.join(update_relation_sql_list)
     update_ticket_sql = ';'.join(update_ticket_sql_list)
+    update_ticket_worked_sql = ';'.join(update_ticket_worked_sql_list)
     # print(insert_relation_sql)
     # print(update_relation_sql)
     # print(update_ticket_sql)
+    # print(update_ticket_worked_sql)
     cursor.execute(insert_relation_sql)
     cursor.execute(update_relation_sql)
     cursor.execute(update_ticket_sql)
+    cursor.execute(update_ticket_worked_sql)
 
 db.close()
 
