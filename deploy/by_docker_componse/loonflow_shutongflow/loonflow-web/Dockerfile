@@ -1,8 +1,9 @@
 FROM centos:7
 LABEL maintainer blackholll@163.com
 # 安装基础包
-RUN yum install -y mysql-devel gcc gcc-devel python3 python3-pip python3-dev python3-devel mysql-devel zlib-devel openssl-devel openssl-devel git nginx
-RUN mkdir -p /var/log/loonflow
+RUN mkdir -p /var/log/loonflow & \
+    rpm -Uvh http://nginx.org/packages/centos/7/noarch/RPMS/nginx-release-centos-7-0.el7.ngx.noarch.rpm & \
+    yum install -y mysql-devel gcc gcc-devel python3 python3-pip python3-dev python3-devel mysql-devel zlib-devel openssl-devel openssl-devel git 
 WORKDIR /opt
 # RUN git clone https://github.com/blackholll/loonflow.git
 RUN git clone https://gitee.com/shihowcom/loonflow_ro
@@ -31,6 +32,8 @@ RUN sed -i "/'HOST': '127.0.0.1'/c'HOST': 'loonflow-db'" /opt/loonflow/settings/
 RUN sed -i "/HOMEPATH = os.environ['HOMEPATH']/cHOMEPATH = '/var/log/loonflow'" /opt/loonflow/settings/common.py
 RUN sed -i "/HOMEPATH = os.environ['HOME']/cHOMEPATH = '/var/log/loonflow'" /opt/loonflow/settings/common.py
 
+# 安装nginx
+RUN yum install -y nginx
 # uwsgi配置文件
 ADD uwsgi.ini /opt/loonflow/uwsgi.ini
 # nginx配置文件
