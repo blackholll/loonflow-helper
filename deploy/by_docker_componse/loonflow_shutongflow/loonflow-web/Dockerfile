@@ -15,13 +15,14 @@ RUN pip3 install -r pro.txt -i http://pypi.douban.com/simple/ --trusted-host=pyp
 # 复制config.py文件
 WORKDIR /opt/loonflow/settings
 RUN cp pro.py.simple config.py
+RUN pwd
 # 修改redis配置
 RUN sed -i "/REDIS_HOST = '127.0.0.1'/cREDIS_HOST = 'loonflow-redis'" /opt/loonflow/settings/config.py
-RUN sed -i "/REDIS_PASSWORD = ''/cREDIS_HOST = 'loonflow123'" /opt/loonflow/settings/config.py
+RUN sed -i "/REDIS_PASSWORD = ''/cREDIS_PASSWORD = 'loonflow123'" /opt/loonflow/settings/config.py
 
 # 修改数据库配置
-RUN sed -i "/'NAME': 'loonflownew1'/c'NAME': 'loonflow'" /opt/loonflow/settings/config.py
-RUN sed -i "/'USER': 'loonflownew1'/c'USER': 'loonflow'" /opt/loonflow/settings/config.py
+RUN sed -i "/'NAME': 'loonflownew'/c'NAME': 'loonflow'" /opt/loonflow/settings/config.py
+RUN sed -i "/'USER': 'loonflownew'/c'USER': 'loonflow'" /opt/loonflow/settings/config.py
 RUN sed -i "/'PASSWORD': '123456'/c'PASSWORD': 'loonflow123,.Ly'" /opt/loonflow/settings/config.py
 RUN sed -i "/'HOST': '127.0.0.1'/c'HOST': 'loonflow-db'" /opt/loonflow/settings/config.py
 
