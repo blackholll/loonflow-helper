@@ -16,16 +16,15 @@ RUN pip3 install -r pro.txt -i http://pypi.douban.com/simple/ --trusted-host=pyp
 WORKDIR /opt/loonflow/settings
 RUN cp pro.py.simple config.py
 # 修改redis配置
-RUN sed -i "/REDIS_HOST = '127.0.0.1'/cREDIS_HOST = 'loonflow-redis'" /opt/loonflow/settings/config.py
-RUN sed -i "/REDIS_PASSWORD = ''/cREDIS_PASSWORD = 'loonflow123'" /opt/loonflow/settings/config.py
+RUN sed -i "s/REDIS_HOST = '127.0.0.1'/REDIS_HOST = 'loonflow-redis'/g" /opt/loonflow/settings/config.py
+RUN sed -i "s/REDIS_PASSWORD = ''/REDIS_PASSWORD = 'loonflow123'/g" /opt/loonflow/settings/config.py
 
 # 修改数据库配置
-RUN sed -i "/'NAME': 'loonflownew'/c'NAME': 'loonflow'" /opt/loonflow/settings/config.py
-RUN sed -i "/'USER': 'loonflownew'/c'USER': 'loonflow'" /opt/loonflow/settings/config.py
-RUN sed -i "/'PASSWORD': '123456'/c'PASSWORD': 'loonflow123,.Ly'" /opt/loonflow/settings/config.py
-RUN sed -i "/'HOST': '127.0.0.1'/c'HOST': 'loonflow-db'" /opt/loonflow/settings/config.py
+RUN sed -i "s/'NAME': 'loonflownew'/'NAME': 'loonflow'/g" /opt/loonflow/settings/config.py
+RUN sed -i "s/'USER': 'loonflownew'/'USER': 'loonflow'/g" /opt/loonflow/settings/config.py
+RUN sed -i "s/'PASSWORD': '123456'/'PASSWORD': 'loonflow123,.Ly'/g" /opt/loonflow/settings/config.py
+RUN sed -i "s/'HOST': '127.0.0.1'/'HOST': 'loonflow-db'/g" /opt/loonflow/settings/config.py
 
 # 修改日志路径
-# RUN sed -i "/'filename': HOMEPATH + '/loonflow.log'/c'filename': '/var/log/loonflow/loonflow.log'" /opt/loonflow/settings/common.py
-RUN sed -i "/HOMEPATH = os.environ['HOMEPATH']/cHOMEPATH = '/var/log/loonflow'" /opt/loonflow/settings/common.py
-RUN sed -i "/HOMEPATH = os.environ['HOME']/cHOMEPATH = '/var/log/loonflow'" /opt/loonflow/settings/common.py
+# RUN sed -i "s/'filename': HOMEPATH + '/loonflow.log'/'filename': '/var/log/loonflow/loonflow.log'/g" /opt/loonflow/settings/common.py
+RUN sed -i "/HOMEPATH = os.environ/c\    HOMEPATH = '/var/log/loonflow'" /opt/loonflow/settings/common.py
