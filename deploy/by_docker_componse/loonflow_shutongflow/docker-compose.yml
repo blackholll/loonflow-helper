@@ -10,15 +10,15 @@ services:
       MYSQL_DATABASE: loonflow
       MYSQL_USER: loonflow
       MYSQL_PASSWORD: loonflow123,.Ly
-
+    ports:
+      - 3306:3306
   redis:
     hostname: loonflow-redis
     image: redis:latest
     restart: always
     ports:
       - 6379:6379
-    command:
-      redis-server --requirepass loonflow123
+    command: redis-server --requirepass loonflow123
   
   loonflow-web:
     hostname: loonflow-web
@@ -31,8 +31,11 @@ services:
       - mysqldb
       - redis
     command:
-      uwsgi /opt/loonflow/uwsgi.ini
-      service nginx start
+      - /bin/sh
+      - -c
+      - |
+        uwsgi /opt/loonflow/uwsgi.ini
+        service nginx start
 
   loonflow-task:
     hostname: loonflow-task
@@ -43,5 +46,4 @@ services:
       - "mysqldb:loonflow-db"
     depends_on:
       - mysqldb
-    command:
-      celery multi restart -A tasks worker -l info -c 8 -Q loonflow –logfile=/var/log/loonflow/task.log –pidfile=/var/log/loonflow/task.pid
+    command: celery multi restart -A tasks worker -l info -c 8 -Q loonflow –logfile=/var/log/loonflow/task.log –pidfile=/var/log/loonflow/task.pid

@@ -31,7 +31,6 @@ RUN sed -i "/HOMEPATH = os.environ['HOMEPATH']/cHOMEPATH = '/var/log/loonflow'" 
 RUN sed -i "/HOMEPATH = os.environ['HOME']/cHOMEPATH = '/var/log/loonflow'" /opt/loonflow/settings/common.py
 
 # uwsgi配置文件
-ADD uwsgi.ini /opt/loonflow/uwsgi.ini
+COPY uwsgi.ini /opt/loonflow/
 # nginx配置文件
-ADD nginx.conf /etc/nginx/nginx.conf
-
+COPY nginx.conf /etc/nginx/
