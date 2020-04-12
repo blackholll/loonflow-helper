@@ -1,7 +1,6 @@
 version: '3'
 services:
   mysqldb:
-    hostname: loonflow-db
     image: mysql:5.7
     volumes: 
       - ./dbdata:/var/lib/mysql
@@ -10,7 +9,11 @@ services:
       MYSQL_DATABASE: loonflow
       MYSQL_USER: loonflow
       MYSQL_PASSWORD: loonflow123,.Ly
-
+    command: [
+      '--character-set-server=utf8mb4',
+      '--collation-server=utf8mb4_general_ci',
+      '--default-time-zone=+8:00'
+    ]
   loonflow-redis:
     hostname: loonflow-redis
     image: redis:latest
@@ -25,8 +28,6 @@ services:
     build: 
       context: ./loonflow-web
       dockerfile: Dockerfile
-    links:
-      - "mysqldb:loonflow-db"
     depends_on:
       - mysqldb
       - loonflow-redis
@@ -44,8 +45,6 @@ services:
     build: 
       context: ./loonflow-task
       dockerfile: Dockerfile
-    links:
-      - "mysqldb:loonflow-db"
     depends_on:
       - mysqldb
     command:

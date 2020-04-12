@@ -25,7 +25,7 @@ RUN sed -i "/REDIS_PASSWORD = ''/cREDIS_PASSWORD = 'loonflow123'" /opt/loonflow/
 RUN sed -i "/'NAME': 'loonflownew'/c\            'NAME': 'loonflow'," /opt/loonflow/settings/config.py
 RUN sed -i "/'USER': 'loonflownew'/c\            'USER': 'loonflow'," /opt/loonflow/settings/config.py
 RUN sed -i "/'PASSWORD': '123456'/c\            'PASSWORD': 'loonflow123,.Ly'," /opt/loonflow/settings/config.py
-RUN sed -i "/'HOST': '127.0.0.1'/c\            'HOST': 'loonflow-db'," /opt/loonflow/settings/config.py
+RUN sed -i "/'HOST': '127.0.0.1'/c\            'HOST': 'mysqldb'," /opt/loonflow/settings/config.py
 
 # 修改日志路径
 # RUN sed -i "s/'filename': HOMEPATH + '/loonflow.log'/'filename': '/var/log/loonflow/loonflow.log'/g" /opt/loonflow/settings/common.py
